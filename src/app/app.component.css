@@ -1,0 +1,29 @@
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-top: 32px;
+  padding-bottom: 32px;
+}
+
+.menu {
+  margin-bottom: 16px
+}
+
+.menu button {
+  margin-right: 8px;
+}
+
+.card {
+  margin-top: 16px;
+  flex: 1;
+  overflow-y: scroll;
+}
+
+.card-body {
+  display: flex;
+}
+
+.spinner-border {
+  margin: auto;
+}
