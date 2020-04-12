@@ -1,12 +1,9 @@
 import { NgModule } from '@angular/core';
-import { NgxRequestCacheComponent } from './ngx-request-cache.component';
-
-
 
 @NgModule({
-  declarations: [NgxRequestCacheComponent],
+  declarations: [],
   imports: [
   ],
-  exports: [NgxRequestCacheComponent]
+  exports: []
 })
 export class NgxRequestCacheModule { }

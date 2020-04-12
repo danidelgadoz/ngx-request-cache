@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { NgxRequestCacheService } from './ngx-request-cache.service';
+import { RequestCacheService } from './ngx-request-cache.service';
 
-describe('NgxRequestCacheService', () => {
-  let service: NgxRequestCacheService;
+describe('RequestCacheService', () => {
+  let service: RequestCacheService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(NgxRequestCacheService);
+    service = TestBed.inject(RequestCacheService);
   });
 
   it('should be created', () => {
