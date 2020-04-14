@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { tap, catchError, finalize } from 'rxjs/operators';
 
 import { RequestCacheService } from './ngx-request-cache.service';
-import { NGX_REQUEST_CACHABLE_HEADER } from './ngx-request-cache.constants';
+import { RequestCacheHeader } from './ngx-request-cache.enums';
 
 @Injectable()
 export class RequestCacheInterceptor implements HttpInterceptor {
@@ -44,11 +44,11 @@ export class RequestCacheInterceptor implements HttpInterceptor {
   }
 
   private removeCacheHeaders(req: HttpRequest<any>): HttpRequest<any> {
-    return req.clone({ headers: req.headers.delete(NGX_REQUEST_CACHABLE_HEADER) });
+    return req.clone({ headers: req.headers.delete(RequestCacheHeader.Cachable) });
   }
 
   private isCachable(req: HttpRequest<any>): boolean {
-    return req.headers.has(NGX_REQUEST_CACHABLE_HEADER);
+    return req.headers.has(RequestCacheHeader.Cachable);
   }
 
 }

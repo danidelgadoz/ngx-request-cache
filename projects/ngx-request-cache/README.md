@@ -1,6 +1,6 @@
 # NgxRequestCache
 
-HttpResponse stored on navigator memory to avoid hitting multiple times to the same API.
+Angular library for storing HttpResponse on navigator memory and avoid hitting multiple times to the same API.
 
 This implementation relies on:
 1. Use of angular `HttpClient` service when request an API.
@@ -37,11 +37,11 @@ import { RequestCacheInterceptor, RequestCacheService } from 'ngx-request-cache'
 
 #### Ready to go:
 
-Add `NGX_REQUEST_CACHABLE_HEADER` on request header (will be remove before navigator do the XHR)
+Add `cachable` on request headers (will be remove before navigator do the XHR)
 
 ```javascript
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { NGX_REQUEST_CACHABLE_HEADER } from 'ngx-request-cache';
+import { RequestCacheHeader } from 'ngx-request-cache';
 
 @Injectable()
 export class DataService {
@@ -49,7 +49,7 @@ export class DataService {
 
   getData(): Observable<any> {
     let headers = new HttpHeaders();
-    headers = headers.append(NGX_REQUEST_CACHABLE_HEADER, '');
+    headers = headers.append(RequestCacheHeader.Cachable, '');
 
     return this.http.get(`URL`, { headers, params });
   }

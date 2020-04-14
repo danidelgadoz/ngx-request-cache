@@ -1,9 +1,15 @@
 {
   "name": "ngx-request-cache",
-  "version": "0.0.6",
+  "description": "Angular library for storing HttpResponse on navigator memory",
+  "version": "0.0.7",
+  "license": "MIT",
   "author": {
     "name": "Daniel Delgado",
     "url": "http://github.com/dedd1993"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dedd1993/ngx-request-cache.git"
   },
   "keywords": [
     "angular",
@@ -12,7 +18,6 @@
     "http",
     "cache"
   ],
-  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^9.0.7",
     "@angular/core": "^9.0.7",
