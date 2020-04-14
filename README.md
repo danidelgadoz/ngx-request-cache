@@ -1,27 +1,71 @@
-# NgxRequestCacheApp
+# NgxRequestCache
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.1.
+This project implements storing HttpResponse on navigator memory to avoid hitting the same API.
 
-## Development server
+This implementation relies on:
+1. Use of angular `HttpClient` service when request an API.
+1. Developer ensures the requests passes by `HttpInterceptor` (HttpClient default behavior).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Features
 
-## Code scaffolding
+* Responses are stored in cache associating to them a unique identifier generated with request URL with params and request body.
+* <ins>Too Many Requests</ins> considered, so if you do 10 identical request at the same time the first is going to hit the API and the other 9 are going to wait for its response to emit the response where each of them were invocated.
+* Ensures all requests with cache strategy has the same behavior as if it was used without cache strategy.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Installation
 
-## Build
+```bash
+npm i ngx-request-cache
+```
+## Usage
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+#### Before start using add providers and the interceptor at your root module:
 
-## Running unit tests
+```javascript
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RequestCacheInterceptor, RequestCacheService } from 'ngx-request-cache';
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+@NgModule({
+  ...
+  imports: [ HttpClientModule ],
+  providers: [
+    RequestCacheService,
+    { provide: HTTP_INTERCEPTORS, useClass: RequestCacheInterceptor, multi: true },
+  ]
+})
+```
 
-## Running end-to-end tests
+#### Ready to go:
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+Add `NGX_REQUEST_CACHABLE_HEADER` on request header (will be remove before navigator do the XHR)
 
-## Further help
+```javascript
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { NGX_REQUEST_CACHABLE_HEADER } from 'ngx-request-cache';
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+@Injectable()
+export class DataService {
+  constructor(private http: HttpClient) { }
+
+  getData(): Observable<any> {
+    let headers = new HttpHeaders();
+    headers = headers.append(NGX_REQUEST_CACHABLE_HEADER, '');
+
+    return this.http.get(`URL`, { headers, params });
+  }
+}
+```
+
+#### Clear cache:
+
+Use `clear` method of `RequestCacheService` to remove **all data** stored in memory
+
+```javascript
+import { RequestCacheService } from 'ngx-request-cache';
+
+export class DataService {
+  constructor(private requestCacheService: RequestCacheService) {
+    this.requestCacheService.clear(); // this is all
+  }
+}
+```

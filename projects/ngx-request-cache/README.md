@@ -1,24 +1,71 @@
 # NgxRequestCache
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.7.
+This project implements storing HttpResponse on navigator memory to avoid hitting the same API.
 
-## Code scaffolding
+This implementation relies on:
+1. Use of angular `HttpClient` service when request an API.
+1. Developer ensures the requests passes by `HttpInterceptor` (HttpClient default behavior).
 
-Run `ng generate component component-name --project ngx-request-cache` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project ngx-request-cache`.
-> Note: Don't forget to add `--project ngx-request-cache` or else it will be added to the default project in your `angular.json` file. 
+## Features
 
-## Build
+* Responses are stored in cache associating to them a unique identifier generated with request URL with params and request body.
+* <ins>Too Many Requests</ins> considered, so if you do 10 identical request at the same time the first is going to hit the API and the other 9 are going to wait for its response to emit the response where each of them were invocated.
+* Ensures all requests with cache strategy has the same behavior as if it was used without cache strategy.
 
-Run `ng build ngx-request-cache` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Installation
 
-## Publishing
+```bash
+npm i ngx-request-cache
+```
+## Usage
 
-After building your library with `ng build ngx-request-cache`, go to the dist folder `cd dist/ngx-request-cache` and run `npm publish`.
+#### Before start using add providers and the interceptor at your root module:
 
-## Running unit tests
+```javascript
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { RequestCacheInterceptor, RequestCacheService } from 'ngx-request-cache';
 
-Run `ng test ngx-request-cache` to execute the unit tests via [Karma](https://karma-runner.github.io).
+@NgModule({
+  ...
+  imports: [ HttpClientModule ],
+  providers: [
+    RequestCacheService,
+    { provide: HTTP_INTERCEPTORS, useClass: RequestCacheInterceptor, multi: true },
+  ]
+})
+```
 
-## Further help
+#### Ready to go:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Add `NGX_REQUEST_CACHABLE_HEADER` on request header (will be remove before navigator do the XHR)
+
+```javascript
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { NGX_REQUEST_CACHABLE_HEADER } from 'ngx-request-cache';
+
+@Injectable()
+export class DataService {
+  constructor(private http: HttpClient) { }
+
+  getData(): Observable<any> {
+    let headers = new HttpHeaders();
+    headers = headers.append(NGX_REQUEST_CACHABLE_HEADER, '');
+
+    return this.http.get(`URL`, { headers, params });
+  }
+}
+```
+
+#### Clear cache:
+
+Use `clear` method of `RequestCacheService` to remove **all data** stored in memory
+
+```javascript
+import { RequestCacheService } from 'ngx-request-cache';
+
+export class DataService {
+  constructor(private requestCacheService: RequestCacheService) {
+    this.requestCacheService.clear(); // this is all
+  }
+}
+```
