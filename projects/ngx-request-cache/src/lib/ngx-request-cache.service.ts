@@ -30,7 +30,7 @@ export class RequestCacheService  {
   }
 
   set(req: HttpRequest<any>, response: HttpResponse<any>): void {
-    this.cache.set(this.getKeyXHR(req), response);
+    this.cache.set(this.getKeyXHR(req), response.clone({ body: {...response.body} }));
   }
 
   cast(req: HttpRequest<any>, response: HttpResponse<any>, error?: HttpErrorResponse): void {

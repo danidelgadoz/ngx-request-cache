@@ -1,6 +1,6 @@
 # NgxRequestCache
 
-This project implements storing HttpResponse on navigator memory to avoid hitting the same API.
+HttpResponse stored on navigator memory to avoid hitting multiple times to the same API.
 
 This implementation relies on:
 1. Use of angular `HttpClient` service when request an API.
