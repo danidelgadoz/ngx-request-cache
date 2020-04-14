@@ -13,7 +13,7 @@ export class RequestCacheService  {
   get(req: HttpRequest<any>): Observable<HttpResponse<any>> | undefined {
     const cached = this.cache.get(this.getKeyXHR(req));
     if (cached) {
-      return of(cached);
+      return of(this.deepCloneHttpResponse(cached));
     }
 
     const pending = this.pending.get(this.getKeyXHR(req));
@@ -29,13 +29,13 @@ export class RequestCacheService  {
     return undefined;
   }
 
-  set(req: HttpRequest<any>, response: HttpResponse<any>): void {
-    this.cache.set(this.getKeyXHR(req), response.clone({ body: {...response.body} }));
+  set(req: HttpRequest<any>, res: HttpResponse<any>): void {
+    this.cache.set(this.getKeyXHR(req), this.deepCloneHttpResponse(res));
   }
 
-  cast(req: HttpRequest<any>, response: HttpResponse<any>, error?: HttpErrorResponse): void {
-      if (response) {
-        this.pending.get(this.getKeyXHR(req)).next(response);
+  cast(req: HttpRequest<any>, res: HttpResponse<any>, error?: HttpErrorResponse): void {
+      if (res) {
+        this.pending.get(this.getKeyXHR(req)).next(res);
       }
 
       if (error) {
@@ -54,6 +54,12 @@ export class RequestCacheService  {
 
   private getKeyXHR(req: HttpRequest<any>): string {
     return `${req.urlWithParams}***${JSON.stringify(req.body)}`;
+  }
+
+  private deepCloneHttpResponse(res: HttpResponse<any>): any {
+    return res.clone({
+      body: JSON.parse(JSON.stringify(res.body))
+    });
   }
 
 }

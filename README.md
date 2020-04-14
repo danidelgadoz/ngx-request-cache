@@ -4,11 +4,11 @@ HttpResponse stored on navigator memory to avoid hitting multiple times to the s
 
 This implementation relies on:
 1. Use of angular `HttpClient` service when request an API.
-1. Developer ensures the requests passes by `HttpInterceptor` (HttpClient default behavior).
+1. Developer ensures the requests go through `HttpInterceptor` (HttpClient default behavior).
 
 ## Features
 
-* Responses are stored in cache associating to them a unique identifier generated with request URL with params and request body.
+* HttpResponse are stored associating to them a unique identifier generated with request URL with params and request body.
 * <ins>Too Many Requests</ins> considered, so if you do 10 identical request at the same time the first is going to hit the API and the other 9 are going to wait for its response to emit the response where each of them were invocated.
 * Ensures all requests with cache strategy has the same behavior as if it was used without cache strategy.
 
