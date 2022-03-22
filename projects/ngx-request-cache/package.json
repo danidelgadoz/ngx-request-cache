@@ -1,7 +1,7 @@
 {
   "name": "ngx-request-cache",
   "description": "Angular library for storing HttpResponse on navigator memory",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "license": "MIT",
   "author": {
     "name": "Daniel Delgado",
