@@ -33,18 +33,18 @@ export class RequestCacheService  {
     this.cache.set(this.getKeyXHR(req), this.deepCloneHttpResponse(res));
   }
 
-  cast(req: HttpRequest<any>, res: HttpResponse<any>, error?: HttpErrorResponse): void {
+  cast(req: HttpRequest<any>, res: HttpResponse<any> | null, error?: HttpErrorResponse): void {
       if (res) {
-        this.pending.get(this.getKeyXHR(req)).next(res);
+        this.pending.get(this.getKeyXHR(req))?.next(res);
       }
 
       if (error) {
-        this.pending.get(this.getKeyXHR(req)).error(error);
+        this.pending.get(this.getKeyXHR(req))?.error(error);
       }
   }
 
   complete(req: HttpRequest<any>): void {
-      this.pending.get(this.getKeyXHR(req)).complete();
+      this.pending.get(this.getKeyXHR(req))?.complete();
       this.pending.delete(this.getKeyXHR(req));
   }
 
