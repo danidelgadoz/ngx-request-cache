@@ -5,17 +5,17 @@
   "license": "MIT",
   "author": {
     "name": "Daniel Delgado",
-    "url": "http://github.com/dedd1993"
+    "url": "http://github.com/danidelgadoz"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/dedd1993/ngx-request-cache.git"
+    "url": "git://github.com/danidelgadoz/ngx-request-cache.git"
   },
   "keywords": [
     "angular",
     "typescript",
     "request",
-    "http",
+    "http-client",
     "cache"
   ],
   "peerDependencies": {

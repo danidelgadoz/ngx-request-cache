@@ -1,9 +1,9 @@
 # NgxRequestCache
 
-Angular library for storing HttpResponse on navigator memory and avoid hitting multiple times to the same API.
+Angular library for storing HttpResponse on navigator memory to avoid hitting multiple times to the same API.
 
 This implementation relies on:
-1. Use of angular `HttpClient` service when request an API.
+1. Use of angular `HttpClient` service when requesting an API.
 1. Developer ensures the requests go through `HttpInterceptor` (HttpClient default behavior).
 
 ## Features
@@ -51,7 +51,7 @@ export class DataService {
     let headers = new HttpHeaders();
     headers = headers.append(RequestCacheHeader.Cachable, '');
 
-    return this.http.get(`URL`, { headers, params });
+    return this.http.get(`URL`, { headers });
   }
 }
 ```

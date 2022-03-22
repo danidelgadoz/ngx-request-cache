@@ -1,6 +1,7 @@
 {
   "name": "ngx-request-cache-workspace",
   "version": "0.0.0",
+  "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
