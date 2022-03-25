@@ -6,11 +6,8 @@ This implementation relies on:
 1. Use of angular `HttpClient` service when requesting an API.
 1. Developer ensures the requests go through `HttpInterceptor` (HttpClient default behavior).
 
-## Features
-
-* HttpResponse are stored associating to them a unique identifier generated with request URL with params and request body.
-* <ins>Too Many Requests</ins> considered, so if you do 10 identical request at the same time the first is going to hit the API and the other 9 are going to wait for its response to emit the response where each of them were invocated.
-* Ensures all requests with cache strategy has the same behavior as if it was used without cache strategy.
+## Demo
+Check [live demo](https://ngx-request-cache.web.app) on your navigator **monitoring devtool's network** and take a look to the source on [StackBlitz](https://stackblitz.com/edit/ngx-request-cache-demo).
 
 ## Installation
 
@@ -19,25 +16,17 @@ npm i ngx-request-cache
 ```
 ## Usage
 
-#### Before start using add providers and the interceptor at your root module:
+* **Setup root module:**
 
 ```javascript
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RequestCacheInterceptor, RequestCacheService } from 'ngx-request-cache';
+import { NgxRequestCacheModule } from 'ngx-request-cache';
 
 @NgModule({
-  ...
-  imports: [ HttpClientModule ],
-  providers: [
-    RequestCacheService,
-    { provide: HTTP_INTERCEPTORS, useClass: RequestCacheInterceptor, multi: true },
-  ]
+  imports: [ NgxRequestCacheModule ]
 })
 ```
 
-#### Ready to go:
-
-Add `cachable` on request headers (will be remove before navigator do the XHR)
+* **Cache an API:**
 
 ```javascript
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -55,17 +44,21 @@ export class DataService {
   }
 }
 ```
+Library's headers are removed internally on `RequestCacheInterceptor`.
 
-#### Clear cache:
-
-Use `clear` method of `RequestCacheService` to remove **all data** stored in memory
+* **Clear cache:**
 
 ```javascript
 import { RequestCacheService } from 'ngx-request-cache';
 
 export class DataService {
   constructor(private requestCacheService: RequestCacheService) {
-    this.requestCacheService.clear(); // this is all
+    this.requestCacheService.clear(); // All data stored in memory.
   }
 }
 ```
+
+## Considerations:
+
+* HttpResponse's are stored associating to them a unique identifier generated with request URL with params and request body.
+* <ins>Too Many Requests</ins> prevented, if you do 10 identical request at the same time the first hits the API and the other 9 keep waiting for it's response to emit the answer wherever they were invoked.
