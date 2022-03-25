@@ -3,6 +3,7 @@ import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/ht
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { catchError, delay } from 'rxjs/operators';
 
+// TODO: decouple private methods in other store.service
 @Injectable()
 export class RequestCacheService  {
   private cache = new Map<string, HttpResponse<any>>();
@@ -10,7 +11,7 @@ export class RequestCacheService  {
 
   constructor() {}
 
-  get(req: HttpRequest<any>): Observable<HttpResponse<any>> | undefined {
+  private get(req: HttpRequest<any>): Observable<HttpResponse<any>> | undefined {
     const cached = this.cache.get(this.getKeyXHR(req));
     if (cached) {
       return of(this.deepCloneHttpResponse(cached));
@@ -29,11 +30,11 @@ export class RequestCacheService  {
     return undefined;
   }
 
-  set(req: HttpRequest<any>, res: HttpResponse<any>): void {
+  private set(req: HttpRequest<any>, res: HttpResponse<any>): void {
     this.cache.set(this.getKeyXHR(req), this.deepCloneHttpResponse(res));
   }
 
-  cast(req: HttpRequest<any>, res: HttpResponse<any> | null, error?: HttpErrorResponse): void {
+  private cast(req: HttpRequest<any>, res: HttpResponse<any> | null, error?: HttpErrorResponse): void {
       if (res) {
         this.pending.get(this.getKeyXHR(req))?.next(res);
       }
@@ -43,11 +44,14 @@ export class RequestCacheService  {
       }
   }
 
-  complete(req: HttpRequest<any>): void {
+  private complete(req: HttpRequest<any>): void {
       this.pending.get(this.getKeyXHR(req))?.complete();
       this.pending.delete(this.getKeyXHR(req));
   }
 
+  /**
+   * Use clear method to remove all data stored in memory
+   */
   clear(): void {
     this.cache.clear();
   }

@@ -19,7 +19,7 @@ export class RequestCacheInterceptor implements HttpInterceptor {
     }
 
     req = this.removeCacheHeaders(req);
-    const cachedResponse = this.requestCacheService.get(req);
+    const cachedResponse = this.requestCacheService['get'](req);
     return cachedResponse ? cachedResponse : this.sendRequest(req, next);
   }
 
@@ -29,16 +29,16 @@ export class RequestCacheInterceptor implements HttpInterceptor {
       .pipe(
         tap(event => {
           if (event instanceof HttpResponse) {
-            this.requestCacheService.cast(req, event);
-            this.requestCacheService.set(req, event);
+            this.requestCacheService['cast'](req, event);
+            this.requestCacheService['set'](req, event);
           }
         }),
         catchError(error => {
-          this.requestCacheService.cast(req, null, error);
+          this.requestCacheService['cast'](req, null, error);
           return throwError(error);
         }),
         finalize(() => {
-          this.requestCacheService.complete(req);
+          this.requestCacheService['complete'](req);
         })
       );
   }
