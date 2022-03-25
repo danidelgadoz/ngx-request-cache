@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/dedd1993/ngx-request-cache/compare/v1.0.0...v1.1.0) (2022-03-25)
+
+
+### Features
+
+* use module instead import service and interceptor manually ([164bc10](https://github.com/dedd1993/ngx-request-cache/commit/164bc10f5d19345a610cc7c6c93927a913785160))
+
 ## 1.0.0 (2022-03-22)
 
 
