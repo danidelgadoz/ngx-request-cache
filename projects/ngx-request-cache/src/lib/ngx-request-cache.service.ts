@@ -2,17 +2,24 @@ import { Injectable } from '@angular/core';
 import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { catchError, delay } from 'rxjs/operators';
+import { NgxRequestCacheMemoryStorage } from './storage/ngx-request-cache-memory-storage';
+
+export interface NgxRequestCacheConfig {
+  store?: any;
+};
 
 // TODO: decouple private methods in other store.service
 @Injectable()
 export class RequestCacheService  {
-  private cache = new Map<string, HttpResponse<any>>();
   private pending = new Map<string, Subject<HttpResponse<any>>>();
+  private config: NgxRequestCacheConfig = {
+    store: new NgxRequestCacheMemoryStorage(),
+  };
 
   constructor() {}
 
   private get(req: HttpRequest<any>): Observable<HttpResponse<any>> | undefined {
-    const cached = this.cache.get(this.getKeyXHR(req));
+    const cached = this.config.store.get(this.getKeyXHR(req));
     if (cached) {
       return of(this.deepCloneHttpResponse(cached));
     }
@@ -31,7 +38,7 @@ export class RequestCacheService  {
   }
 
   private set(req: HttpRequest<any>, res: HttpResponse<any>): void {
-    this.cache.set(this.getKeyXHR(req), this.deepCloneHttpResponse(res));
+    this.config.store.set(this.getKeyXHR(req), this.deepCloneHttpResponse(res));
   }
 
   private cast(req: HttpRequest<any>, res: HttpResponse<any> | null, error?: HttpErrorResponse): void {
@@ -53,7 +60,7 @@ export class RequestCacheService  {
    * Use clear method to remove all data stored in memory
    */
   clear(): void {
-    this.cache.clear();
+    this.config.store.clear();
   }
 
   private getKeyXHR(req: HttpRequest<any>): string {
