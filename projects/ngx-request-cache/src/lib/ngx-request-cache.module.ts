@@ -1,17 +1,27 @@
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgModule } from '@angular/core';
 
 import { RequestCacheInterceptor } from './ngx-request-cache.interceptor';
-import { RequestCacheService } from './ngx-request-cache.service';
+import { NgxRequestCacheConfig, NGX_REQUEST_CACHE_CONFIG, RequestCacheService } from './ngx-request-cache.service';
 
 @NgModule({
-  declarations: [],
-  imports: [
-  ],
   providers: [
     RequestCacheService,
     { provide: HTTP_INTERCEPTORS, useClass: RequestCacheInterceptor, multi: true },
   ],
-  exports: []
 })
-export class NgxRequestCacheModule { }
+export class NgxRequestCacheModule {
+  static forRoot(
+    ngxRequestCacheConfig?: NgxRequestCacheConfig
+  ): ModuleWithProviders<NgxRequestCacheModule> {
+    return {
+      ngModule: NgxRequestCacheModule,
+      providers: [
+        {
+          provide: NGX_REQUEST_CACHE_CONFIG,
+          useValue: ngxRequestCacheConfig,
+        },
+      ],
+    };
+  }
+}

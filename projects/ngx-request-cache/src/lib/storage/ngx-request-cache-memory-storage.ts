@@ -1,6 +1,11 @@
 import { HttpResponse } from '@angular/common/http';
 import { NgxRequestCacheStorageInterface } from './ngx-request-cache-storage.interface';
 
+function getHttpResponseDeepClone(res: HttpResponse<any>): HttpResponse<any> {
+  return res.clone({
+    body: JSON.parse(JSON.stringify(res.body))
+  });
+}
 export class NgxRequestCacheMemoryStorage implements NgxRequestCacheStorageInterface {
 
   private store = new Map<string, HttpResponse<any>>();
@@ -10,10 +15,15 @@ export class NgxRequestCacheMemoryStorage implements NgxRequestCacheStorageInter
   }
 
   get(key: string): HttpResponse<any> | undefined {
-    return this.store.get(key);
+    const value = this.store.get(key);
+    if (value) {
+      return getHttpResponseDeepClone(value);
+    }
+    return undefined;
   }
 
-  set(key: string, value: HttpResponse<any>): void {
-    this.store.set(key, value);
+  set(key: string, res: HttpResponse<any>): void {
+    this.store.set(key, getHttpResponseDeepClone(res));
   }
+
 }

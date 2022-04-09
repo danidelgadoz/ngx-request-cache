@@ -1,27 +1,49 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable, Subject, of, throwError } from 'rxjs';
 import { catchError, delay } from 'rxjs/operators';
+import { RequestCacheStoreType, requestCacheStoreType } from './ngx-request-cache.enums';
 import { NgxRequestCacheMemoryStorage } from './storage/ngx-request-cache-memory-storage';
+import { NgxRequestCacheLocalStorage } from './storage/ngx-request-cache-local-storage';
+import { NgxRequestCacheStorageInterface } from './storage/ngx-request-cache-storage.interface';
+import { NgxRequestCacheSessionStorage } from './storage/ngx-request-cache-session-storage';
 
 export interface NgxRequestCacheConfig {
-  store?: any;
+  store: RequestCacheStoreType
 };
+
+export const NGX_REQUEST_CACHE_CONFIG = new InjectionToken<NgxRequestCacheConfig>(
+  'ngx-request-config.config'
+);
 
 // TODO: decouple private methods in other store.service
 @Injectable()
 export class RequestCacheService  {
   private pending = new Map<string, Subject<HttpResponse<any>>>();
-  private config: NgxRequestCacheConfig = {
-    store: new NgxRequestCacheMemoryStorage(),
-  };
+  private _store: NgxRequestCacheStorageInterface;
 
-  constructor() {}
+  constructor(
+    @Inject(NGX_REQUEST_CACHE_CONFIG) @Optional() config: NgxRequestCacheConfig
+  ) {
+    this._store = this.getStoreFromConfig(config);
+  }
+
+  private getStoreFromConfig(config: NgxRequestCacheConfig): NgxRequestCacheStorageInterface {
+    if (config.store === requestCacheStoreType.LocalStorage) {
+      return new NgxRequestCacheLocalStorage();
+    }
+
+    if (config.store === requestCacheStoreType.SessionStorage) {
+      return new NgxRequestCacheSessionStorage();
+    }
+
+    return new NgxRequestCacheMemoryStorage();
+  }
 
   private get(req: HttpRequest<any>): Observable<HttpResponse<any>> | undefined {
-    const cached = this.config.store.get(this.getKeyXHR(req));
+    const cached = this._store.get(this.getKeyXHR(req));
     if (cached) {
-      return of(this.deepCloneHttpResponse(cached));
+      return of(cached);
     }
 
     const pending = this.pending.get(this.getKeyXHR(req));
@@ -38,7 +60,7 @@ export class RequestCacheService  {
   }
 
   private set(req: HttpRequest<any>, res: HttpResponse<any>): void {
-    this.config.store.set(this.getKeyXHR(req), this.deepCloneHttpResponse(res));
+    this._store.set(this.getKeyXHR(req), res);
   }
 
   private cast(req: HttpRequest<any>, res: HttpResponse<any> | null, error?: HttpErrorResponse): void {
@@ -60,17 +82,11 @@ export class RequestCacheService  {
    * Use clear method to remove all data stored in memory
    */
   clear(): void {
-    this.config.store.clear();
+    this._store.clear();
   }
 
   private getKeyXHR(req: HttpRequest<any>): string {
     return `${req.urlWithParams}***${JSON.stringify(req.body)}`;
-  }
-
-  private deepCloneHttpResponse(res: HttpResponse<any>): any {
-    return res.clone({
-      body: JSON.parse(JSON.stringify(res.body))
-    });
   }
 
 }

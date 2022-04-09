@@ -3,7 +3,6 @@
 import { HttpResponse } from '@angular/common/http';
 
 export interface NgxRequestCacheStorageInterface {
-
   clear(): void;
 
   get(key: string): HttpResponse<any> | undefined;
