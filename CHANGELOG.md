@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/dedd1993/ngx-request-cache/compare/v1.1.0...v1.2.0) (2022-04-11)
+
+
+### Features
+
+* include http-method on current key for cached requests ([d3d1d5b](https://github.com/dedd1993/ngx-request-cache/commit/d3d1d5b87d418416d934bdcef0ea49a0589b331e))
+* **storage:** add localstorage/sessionstorage in adition to already default browser-memory ([9c73f6e](https://github.com/dedd1993/ngx-request-cache/commit/9c73f6e2f715e3772a7ca9cd98b4301b9759437f))
+
 ## [1.1.0](https://github.com/dedd1993/ngx-request-cache/compare/v1.0.0...v1.1.0) (2022-03-25)
 
 
