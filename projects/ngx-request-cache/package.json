@@ -16,7 +16,10 @@
     "typescript",
     "request",
     "http-client",
-    "cache"
+    "cache",
+    "interceptor",
+    "network",
+    "http"
   ],
   "peerDependencies": {
     "@angular/common": "^13.3.0",
