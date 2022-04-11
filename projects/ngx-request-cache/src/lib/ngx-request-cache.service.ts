@@ -86,7 +86,7 @@ export class RequestCacheService  {
   }
 
   private getKeyXHR(req: HttpRequest<any>): string {
-    return `${req.urlWithParams}***${JSON.stringify(req.body)}`;
+    return `${req.method}::${req.urlWithParams}::${JSON.stringify(req.body)}`;
   }
 
 }
