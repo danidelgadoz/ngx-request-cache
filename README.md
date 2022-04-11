@@ -1,10 +1,12 @@
 # NgxRequestCache
 
-Angular library for storing HttpResponse on navigator memory to avoid hitting multiple times to the same API.
+Cache for HTTP requests with Angular `HttpClient`.
 
-This implementation relies on:
-1. Use of angular `HttpClient` service when requesting an API.
-1. Developer ensures the requests go through `HttpInterceptor` (HttpClient default behavior).
+**Common usages:**
+* Avoid hitting server to fetch same data when service is invoked serially or in parallel.
+* Create offline application.
+
+*Library relies on ensure requests go through Angular `HttpInterceptor` (default behavior).*
 
 ## Demo
 Check [live demo](https://ngx-request-cache.web.app) on your navigator **monitoring devtool's network** and take a look to the source on [StackBlitz](https://stackblitz.com/edit/ngx-request-cache-demo).
@@ -26,6 +28,8 @@ import { NgxRequestCacheModule } from 'ngx-request-cache';
 })
 ```
 
+By default, persistence is on memory. To switch to sessionStorage or localStorage, [review here](#other-setups).
+
 * **Cache an API:**
 
 ```javascript
@@ -44,7 +48,7 @@ export class DataService {
   }
 }
 ```
-Library's headers are removed internally on `RequestCacheInterceptor`.
+Library's headers are removed before sending the request to the server.
 
 * **Clear cache:**
 
@@ -53,12 +57,34 @@ import { RequestCacheService } from 'ngx-request-cache';
 
 export class DataService {
   constructor(private requestCacheService: RequestCacheService) {
-    this.requestCacheService.clear(); // All data stored in memory.
+    this.requestCacheService.clear(); // All data stored.
   }
 }
 ```
 
-## Considerations:
+## Other setups
 
-* HttpResponse's are stored associating to them a unique identifier generated with request URL with params and request body.
-* <ins>Too Many Requests</ins> prevented, if you do 10 identical request at the same time the first hits the API and the other 9 keep waiting for it's response to emit the answer wherever they were invoked.
+Cache store with persistence into <code>sessionStorage</code>:
+
+```javascript
+@NgModule({
+  imports: [ 
+    NgxRequestCacheModule.forRoot({ store: 'sessionStorage' })
+  ]
+})
+```
+
+Cache store with persistence into <code>localStorage</code>:
+
+```javascript
+@NgModule({
+  imports: [ 
+    NgxRequestCacheModule.forRoot({ store: 'localStorage' })
+  ]
+})
+```
+
+# How it works?
+* If a request has `Cachable` header, then a cached response is returned. <ins>If there isn't a cached response</ins>, request is send to server and when the operation has completed the response is cached.
+* A response is stored associating a unique ID generated from request method, url with params and body.
+* <ins>Too Many Requests</ins> prevented: If 10 identical request are made at the same time, the first hits the server and the other 9 keep waiting for it's response to emit the response wherever they were invoked.
